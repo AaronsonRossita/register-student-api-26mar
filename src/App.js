@@ -1,23 +1,27 @@
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
 import './App.css';
+import NewStudent from './newStudent/NewStudent';
+import { getAllCourses } from './services/api';
+import normalizeCourseName from './utils/courseUtils';
 
 function App() {
+
+  const [availableCourses, setAvailableCourses] = useState([]);
+
+  useEffect( () => {
+    getAllCourses().then( response => {
+      const courses = response.data.map( course => {
+        const displayName = normalizeCourseName(course.name);
+        return( {...course, displayName})
+      })
+      setAvailableCourses(courses);
+    });
+  }, []);
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NewStudent courses={availableCourses}/>
     </div>
   );
 }
